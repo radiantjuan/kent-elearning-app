@@ -22,6 +22,7 @@ COPY ./apache.conf /etc/apache2/sites-available/000-default.conf
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
+#sample
 
 COPY ./docker-entrypoint.sh /usr/local/bin
 
