@@ -1,0 +1,35 @@
+name: Deploy Docker Image
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+
+      - name: Connect to EC2 instance and deploy Docker container
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=k230925-radiantcjuan-kent-elearning-instance" --query "Reservations[0].Instances[0].InstanceId" --output text)
+          PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+          
+          echo "Deploying to EC2 instance with public IP: $PUBLIC_IP"
+          
+          # Connect to the instance and deploy
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ubuntu@$PUBLIC_IP << 'EOF'
+            sudo docker pull radiantcjuan/kent-elearning:latest
+            sudo docker stop my-running-container || true
+            sudo docker rm my-running-container || true
+            sudo docker run -d --name my-running-container -p 80:80 radiantcjuan/kent-elearning:latest
+          EOF

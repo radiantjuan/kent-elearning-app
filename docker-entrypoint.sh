@@ -25,11 +25,11 @@ LOG_DEPRECATIONS_CHANNEL=null
 LOG_LEVEL=debug
 
 DB_CONNECTION=mysql
-DB_HOST=mariadb
+DB_HOST=${RDS_INSTANCE_ENV}
 DB_PORT=3306
-DB_DATABASE=bitnami_myapp
-DB_USERNAME=bn_myapp
-DB_PASSWORD=
+DB_DATABASE=kentelearningdb
+DB_USERNAME=kentadmin
+DB_PASSWORD=TestingPassword
 
 SESSION_DRIVER=database
 SESSION_LIFETIME=120
@@ -73,8 +73,14 @@ EOF
 chown -Rf www-data:1000 /var/www/html
 chmod -Rf 775 /var/www/html
 
+cd /var/www/html
+
 php artisan key:generate
 
-# Execute the CMD
-#exec "$@"
 apache2-foreground
+
+php artisan migrate --seed
+
+# Execute the CMD
+exec "$@"
+

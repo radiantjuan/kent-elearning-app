@@ -1,6 +1,10 @@
 # Use the official PHP image with the necessary extensions and Apache
 FROM php:8.2-apache
 
+ARG RDS_INSTANCE
+
+ENV RDS_INSTANCE_ENV=${RDS_INSTANCE}
+
 # Install system dependencies and PHP extensions required by Laravel
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -37,7 +41,6 @@ COPY . /var/www/html
 ## Install dependencies
 RUN composer install
 
-# Expose port 80 for Apache
-EXPOSE 80
-
 ENTRYPOINT ["docker-entrypoint.sh"]
+
+CMD ["${RDS_INSTANCE}"]
