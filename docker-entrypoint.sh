@@ -76,10 +76,9 @@ chmod -Rf 775 /var/www/html
 cd /var/www/html
 
 php artisan key:generate
+php artisan migrate --seed
 
 apache2-foreground
-
-php artisan migrate --seed
 
 # Execute the CMD
 exec "$@"
