@@ -14,6 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create SSH key file
+        run: echo "${{ secrets.EC2_SSHKEY }}" > /tmp/id_rsa && chmod 600 /tmp/id_rsa
+
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -29,7 +32,7 @@ jobs:
           echo "Deploying to EC2 instance with public IP: $PUBLIC_IP"
           
           # Connect to the instance and deploy
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSHKEY }} ubuntu@$PUBLIC_IP << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i /tmp/id_rsa ubuntu@$PUBLIC_IP << 'EOF'
             sudo docker pull radiantcjuan/kent-elearning:latest
             sudo docker stop my-running-container || true
             sudo docker rm my-running-container || true
