@@ -29,7 +29,7 @@ jobs:
           echo "Deploying to EC2 instance with public IP: $PUBLIC_IP"
           
           # Connect to the instance and deploy
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ubuntu@$PUBLIC_IP << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSHKEY }} ubuntu@$PUBLIC_IP << 'EOF'
             sudo docker pull radiantcjuan/kent-elearning:latest
             sudo docker stop my-running-container || true
             sudo docker rm my-running-container || true
